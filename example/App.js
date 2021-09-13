@@ -18,6 +18,10 @@ import {
 } from 'react-native-dlna';
 
 export default class App extends Component {
+  state = {
+    status: 'IDLE',
+    info: {},
+  };
   start = () => {
     startDLNAService('秃尾巴的猫');
   };
@@ -29,16 +33,27 @@ export default class App extends Component {
   componentDidMount() {
     onDlnaMediaInfo(data => {
       console.log(' >> onDlnaMediaInfo:', data);
+      this.setState({info: data});
     });
     onDlnaStateChange(data => {
       console.log(' >> onDlnaStateChange:', data);
+      this.setState({status: data.state});
     });
   }
 
   render() {
+    const {info, status} = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>☆react-native-dlna☆</Text>
+        <Text style={styles.welcome}>{status}</Text>
+        {Object.keys(info).map(key => {
+          return (
+            <Text style={styles.welcome}>
+              {key}: {info[key]}
+            </Text>
+          );
+        })}
         <TouchableOpacity style={styles.start} onPress={this.start}>
           <Text style={styles.text}>RNDLNA START</Text>
         </TouchableOpacity>

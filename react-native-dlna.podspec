@@ -17,12 +17,13 @@ Pod::Spec.new do |s|
   # optional - use expanded license entry instead:
   # s.license    = { :type => "MIT", :file => "LICENSE" }
   s.authors      = { "秃尾巴的猫" => "472647301@qq.com" }
-  s.platforms    = { :ios => "9.0" }
+  s.platforms    = { :ios => "10.0" }
   s.source       = { :git => "https://github.com/472647301/react-native-dlna.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,c,cc,cpp,m,mm,swift}"
   s.requires_arc = true
-
+  s.vendored_frameworks = 'Neptune.framework', 'Platinum.framework'
+  # s.vendored_libraries = "ios/*.a"
   s.dependency "React"
   # ...
   # s.dependency "..."
