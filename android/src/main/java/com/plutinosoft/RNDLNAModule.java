@@ -7,9 +7,11 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.plutinosoft.event.NativeAsyncEvent;
 import com.plutinosoft.event.ServerStateEvent;
@@ -58,13 +60,20 @@ public class RNDLNAModule extends ReactContextBaseJavaModule {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onServerStateChange(ServerStateEvent event) {
         ServerInstance.State state = event.getState();
-        sendEvent("DlnaStateChange", state);
+        WritableMap params = Arguments.createMap();
+        params.putString("state", state.toString());
+        sendEvent("DlnaStateChange", params);
     }
 
     @SuppressWarnings("UnusedDeclaration")
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onNativeAsync(NativeAsyncEvent event) {
-        sendEvent("DlnaMediaInfo",  event.mediaInfo);
+        WritableMap params = Arguments.createMap();
+        params.putString("url", event.mediaInfo.url);
+        params.putString("title", event.mediaInfo.title);
+        params.putString("mediaType", event.mediaInfo.mediaType.toString());
+        params.putString("albumArtURI", event.mediaInfo.albumArtURI);
+        sendEvent("DlnaMediaInfo",  params);
     }
 
     private void sendEvent(String eventName, @Nullable Object data) {

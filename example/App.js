@@ -10,19 +10,30 @@
 
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import RNDLNA from 'react-native-dlna';
+import {
+  startDLNAService,
+  stopDLNAService,
+  onDlnaMediaInfo,
+  onDlnaStateChange,
+} from 'react-native-dlna';
 
 export default class App extends Component {
-  state = {
-    status: 0,
-  };
   start = () => {
-    RNDLNA.startDLNAService('秃尾巴的猫');
+    startDLNAService('秃尾巴的猫');
   };
 
   stop = () => {
-    RNDLNA.stopDLNAService();
+    stopDLNAService();
   };
+
+  componentDidMount() {
+    onDlnaMediaInfo(data => {
+      console.log(' >> onDlnaMediaInfo:', data);
+    });
+    onDlnaStateChange(data => {
+      console.log(' >> onDlnaStateChange:', data);
+    });
+  }
 
   render() {
     return (
