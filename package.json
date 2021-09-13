@@ -9,7 +9,9 @@
     "android",
     "index.js",
     "ios",
-    "react-native-dlna.podspec"
+    "react-native-dlna.podspec",
+    "Neptune.framework",
+    "Platinum.framework"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

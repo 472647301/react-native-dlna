@@ -2,7 +2,22 @@
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
+#import "MediaRendererDelegate.h"
 
-@interface RNDLNA : RCTEventEmitter <RCTBridgeModule>
+@interface RNDLNA : RCTEventEmitter <RCTBridgeModule, MediaRendererDelegate>
+
+@property (nonatomic,strong) NSURL *currentURI;
+@property (nonatomic,strong) NSString *currTitle;
+@property (nonatomic,strong) NSString *album_art_uri;
+@property (nonatomic,strong) NSString *artist;
+@property (nonatomic,strong) NSString *album;
+@property (nonatomic) enum
+{
+mediaType_unsupport,
+mediaType_video,
+mediaType_photo,
+mediaType_music,
+}
+mediaType;
 
 @end
