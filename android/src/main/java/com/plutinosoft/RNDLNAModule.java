@@ -4,10 +4,14 @@ package com.plutinosoft;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -23,6 +27,8 @@ import com.plutinosoft.utils.UUIDUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
 
 public class RNDLNAModule extends ReactContextBaseJavaModule {
     private Activity activity;
@@ -54,6 +60,28 @@ public class RNDLNAModule extends ReactContextBaseJavaModule {
         }
         Intent intent = new Intent(activity, DLNAService.class);
         activity.stopService(intent);
+    }
+
+    @ReactMethod
+    public void getAllApps(Promise promise) {
+        WritableMap params = Arguments.createMap();
+        // 获取已经安装的所有应用, PackageInfo　系统类，包含应用信息
+        List<PackageInfo> packages = reactContext.getPackageManager().getInstalledPackages(0);
+        for (int i = 0; i < packages.size(); i++) {
+            PackageInfo packageInfo = packages.get(i);
+            if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) { //非系统应用
+                String appName = packageInfo.applicationInfo.loadLabel(reactContext.getPackageManager()).toString();
+                params.putString(packageInfo.packageName, appName);
+            }
+        }
+        promise.resolve(params);
+    }
+
+    @ReactMethod
+    public void startApp(String packageName) {
+        PackageManager packageManager = reactContext.getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+        reactContext.startActivity(intent);
     }
 
     @SuppressWarnings("UnusedDeclaration")
