@@ -47,13 +47,17 @@ export default class App extends Component {
       <View style={styles.container}>
         <Text style={styles.welcome}>☆react-native-dlna☆</Text>
         <Text style={styles.welcome}>{status}</Text>
-        {Object.keys(info).map(key => {
+        <Text style={styles.welcome}>{info.title}</Text>
+        <Text style={styles.welcome} numberOfLines={5}>
+          {info.url}
+        </Text>
+        {/* {Object.keys(info).map(key => {
           return (
             <Text style={styles.welcome}>
               {key}: {info[key]}
             </Text>
           );
-        })}
+        })} */}
         <TouchableOpacity style={styles.start} onPress={this.start}>
           <Text style={styles.text}>RNDLNA START</Text>
         </TouchableOpacity>

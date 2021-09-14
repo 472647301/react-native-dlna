@@ -9,10 +9,14 @@
 #define MediaRendererDelegate_h
 
 #import <Foundation/Foundation.h>
+//#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_IPHONE_SIMULATOR
 #include <Platinum/Platinum.h>
+#endif
 
 @protocol MediaRendererDelegate <NSObject>
 @optional
+#if !TARGET_IPHONE_SIMULATOR
 -(void)OnGetCurrentConnectionInfo:(PLT_ActionReference*)action;
 
 // AVTransport
@@ -30,8 +34,9 @@
 -(void) OnSetVolumeDB:(PLT_ActionReference*)action;
 -(void) OnGetVolumeDBRange:(PLT_ActionReference*)action;
 -(void) OnSetMute:(PLT_ActionReference*)action;
+#endif
 @end
-
+#if !TARGET_IPHONE_SIMULATOR
 class PLT_MediaRendererDelegateMy : public PLT_MediaRendererDelegate
 {
 public:
@@ -59,5 +64,5 @@ public:
     NPT_Result OnSetMute(PLT_ActionReference& action) ;
     
 };
-
+#endif
 #endif /* MediaRendererDelegate_h */

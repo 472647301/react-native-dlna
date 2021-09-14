@@ -26,15 +26,13 @@ export function stopDLNAService() {
   if (!RNDLNA.stopDLNAService) {
     return;
   }
-  for (let key in EmitterMap) {
-    if (EmitterMap[key].remove) {
-      EmitterMap[key].remove();
-    }
-  }
   RNDLNA.stopDLNAService();
 }
 
 export function onDlnaStateChange(callback) {
+  if (!RNDLNAEmitter || !RNDLNAEmitter.addListener) {
+    return;
+  }
   EmitterMap["DlnaStateChange"] = RNDLNAEmitter.addListener(
     "DlnaStateChange",
     callback
@@ -43,6 +41,9 @@ export function onDlnaStateChange(callback) {
 }
 
 export function onDlnaMediaInfo(callback) {
+  if (!RNDLNAEmitter || !RNDLNAEmitter.addListener) {
+    return;
+  }
   EmitterMap["DlnaMediaInfo"] = RNDLNAEmitter.addListener(
     "DlnaMediaInfo",
     callback

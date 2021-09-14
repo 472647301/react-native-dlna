@@ -6,6 +6,7 @@
 //
 #import "MediaRendererDelegate.h"
 
+#if !TARGET_IPHONE_SIMULATOR
 PLT_MediaRendererDelegateMy::~PLT_MediaRendererDelegateMy()
 {
     
@@ -104,3 +105,4 @@ NPT_Result PLT_MediaRendererDelegateMy::OnSetMute(PLT_ActionReference& action) {
     });
     return NPT_SUCCESS;
 }
+#endif
