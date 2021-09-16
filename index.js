@@ -1,6 +1,6 @@
 // main index.js
 
-import { NativeModules, NativeEventEmitter } from "react-native";
+import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
 const { RNDLNA } = NativeModules;
 
@@ -27,6 +27,18 @@ export function stopDLNAService() {
     return;
   }
   RNDLNA.stopDLNAService();
+}
+
+export function getAllApps(config) {
+  if (Platform.OS === "ios") {
+    return RNDLNA.getAllApps(config);
+  } else {
+    return RNDLNA.getAllApps();
+  }
+}
+
+export function startApp(packageName) {
+  RNDLNA.startApp(packageName);
 }
 
 export function onDlnaStateChange(callback) {

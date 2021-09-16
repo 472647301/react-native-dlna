@@ -36,3 +36,9 @@ export declare function onDlnaStateChange(
 export declare function onDlnaMediaInfo(
   callback: MediaInfoCallback
 ): EmitterSubscription;
+export declare function getAllApps(params?: {
+  [key: string]: string;
+}): Promise<{
+  [key: string]: string;
+}>;
+export declare function startApp(packageName: string): void;

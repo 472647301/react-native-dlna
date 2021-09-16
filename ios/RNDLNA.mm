@@ -1,7 +1,7 @@
 // RNDLNA.m
 
 #import "RNDLNA.h"
-
+#import <objc/runtime.h>
 //#if !TARGET_IPHONE_SIMULATOR
 #if !TARGET_IPHONE_SIMULATOR
 #include <Platinum/Platinum.h>
@@ -80,6 +80,54 @@ RCT_EXPORT_METHOD(stopDLNAService)
         NSLog(@"UPnP Service is stop!");
     }
 #endif
+}
+
+RCT_EXPORT_METHOD(getAllApps:(NSDictionary *)options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    NSArray * array = [options allKeys];
+    NSMutableDictionary *apps = [[NSMutableDictionary alloc] init];
+    for (NSString * key in array)
+    {
+        NSString * value = options[key];
+        BOOL isHave = [self isInstalled:key];
+        if (isHave) {
+            [apps setObject:key forKey:value];
+        }
+    }
+    resolve(apps);
+}
+
+RCT_EXPORT_METHOD(startApp:(NSString *)bundleID)
+{
+    Class lsawsc = objc_getClass("LSApplicationWorkspace");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    NSObject* workspace = [lsawsc performSelector:NSSelectorFromString(@"defaultWorkspace")];
+    // iOS6 没有defaultWorkspace
+    if ([workspace respondsToSelector:NSSelectorFromString(@"openApplicationWithBundleID:")])
+    {
+        [workspace performSelector:NSSelectorFromString(@"openApplicationWithBundleID:")withObject:bundleID];
+#pragma clang diagnostic pop
+    }
+}
+
+- (BOOL)isInstalled:(NSString *)bundleId {
+    NSBundle *container = [NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/MobileContainerManager.framework"];
+    if ([container load]) {
+        Class appContainer = NSClassFromString(@"MCMAppContainer");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+        id container = [appContainer performSelector:@selector(containerWithIdentifier:error:) withObject:bundleId withObject:nil];
+#pragma clang diagnostic pop
+        if (container) {
+            return YES;
+        } else {
+            return NO;
+        }
+    }
+    return NO;
 }
 
 #if !TARGET_IPHONE_SIMULATOR

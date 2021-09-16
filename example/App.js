@@ -15,6 +15,7 @@ import {
   stopDLNAService,
   onDlnaMediaInfo,
   onDlnaStateChange,
+  getAllApps
 } from 'react-native-dlna';
 
 export default class App extends Component {
@@ -39,6 +40,9 @@ export default class App extends Component {
       console.log(' >> onDlnaStateChange:', data);
       this.setState({status: data.state});
     });
+    getAllApps({}).then(res => {
+      console.log('------', res)
+    })
   }
 
   render() {
