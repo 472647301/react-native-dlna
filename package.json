@@ -1,13 +1,14 @@
 {
   "name": "react-native-dlna",
   "title": "React Native Dlna",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "TODO",
   "main": "index.js",
   "files": [
     "README.md",
     "android",
     "index.js",
+    "index.d.ts",
     "ios",
     "react-native-dlna.podspec",
     "Neptune.framework",
