@@ -2,7 +2,6 @@
 
 package com.plutinosoft;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -31,7 +30,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 
 public class RNDLNAModule extends ReactContextBaseJavaModule {
-    private Activity activity;
     private final ReactApplicationContext reactContext;
 
     public RNDLNAModule(ReactApplicationContext reactContext) {
@@ -47,19 +45,15 @@ public class RNDLNAModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startDLNAService(String friendlyName) {
-        activity = getCurrentActivity();
-        Intent intent = new Intent(activity, DLNAService.class);
+        Intent intent = new Intent(reactContext, DLNAService.class);
         intent.putExtra(DLNAService.EXTRA_SERVER_PARAMS, new ServerParams(friendlyName, false, UUIDUtils.getRandomUUID()));
-        activity.startService(intent);
+        reactContext.startService(intent);
     }
 
     @ReactMethod
     public void stopDLNAService() {
-        if (activity == null) {
-            return;
-        }
-        Intent intent = new Intent(activity, DLNAService.class);
-        activity.stopService(intent);
+        Intent intent = new Intent(reactContext, DLNAService.class);
+        reactContext.stopService(intent);
     }
 
     @ReactMethod
