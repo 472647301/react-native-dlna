@@ -1,7 +1,6 @@
 // RNDLNA.m
 
 #import "RNDLNA.h"
-#import <objc/runtime.h>
 //#if !TARGET_IPHONE_SIMULATOR
 #if !TARGET_IPHONE_SIMULATOR
 #include <Platinum/Platinum.h>
@@ -49,21 +48,16 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(startDLNAService:(NSString *)serverName)
 {
 #if !TARGET_IPHONE_SIMULATOR
-    const char * serverNameChar = [serverName UTF8String];
-    NSString * uuid = [[UIDevice currentDevice].identifierForVendor UUIDString];
-    const char * uuidChar = [uuid UTF8String];
-    renderer = new PLT_MediaRenderer(serverNameChar, false, uuidChar);
-    renderer->SetByeByeFirst(false);
-    delegateCPP.owner = self;
-    renderer->SetDelegate(&delegateCPP);
-    PLT_DeviceHostReference device(renderer);
-    upnp->AddDevice(device);
     if (!upnp->IsRunning()) {
-        upnp->Start();
-        [self sendEventWithName:@"DlnaStateChange" body:@{@"state":@"RUNNING"}];
-        NSLog(@"UPnP Service is starting!");
-    } else {
-        upnp->Stop();
+        const char * serverNameChar = [serverName UTF8String];
+        NSString * uuid = [[UIDevice currentDevice].identifierForVendor UUIDString];
+        const char * uuidChar = [uuid UTF8String];
+        renderer = new PLT_MediaRenderer(serverNameChar, false, uuidChar);
+        renderer->SetByeByeFirst(false);
+        delegateCPP.owner = self;
+        renderer->SetDelegate(&delegateCPP);
+        PLT_DeviceHostReference device(renderer);
+        upnp->AddDevice(device);
         upnp->Start();
         [self sendEventWithName:@"DlnaStateChange" body:@{@"state":@"RUNNING"}];
         NSLog(@"UPnP Service is starting!");
@@ -91,43 +85,40 @@ RCT_EXPORT_METHOD(getAllApps:(NSDictionary *)options
     for (NSString * key in array)
     {
         NSString * value = options[key];
-        BOOL isHave = [self isInstalled:key];
+        BOOL isHave = [self checkAPPIsExist:key];
         if (isHave) {
-            [apps setObject:key forKey:value];
+            [apps setObject:value forKey:key];
         }
     }
     resolve(apps);
 }
 
-RCT_EXPORT_METHOD(startApp:(NSString *)bundleID)
+RCT_EXPORT_METHOD(startApp:(NSString *)URLScheme)
 {
-    Class lsawsc = objc_getClass("LSApplicationWorkspace");
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    NSObject* workspace = [lsawsc performSelector:NSSelectorFromString(@"defaultWorkspace")];
-    // iOS6 没有defaultWorkspace
-    if ([workspace respondsToSelector:NSSelectorFromString(@"openApplicationWithBundleID:")])
-    {
-        [workspace performSelector:NSSelectorFromString(@"openApplicationWithBundleID:")withObject:bundleID];
-#pragma clang diagnostic pop
+    NSURL* url;
+    if ([URLScheme containsString:@"://"]) {
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@",URLScheme]];
+    } else {
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://",URLScheme]];
+    }
+    if ([[UIApplication sharedApplication] canOpenURL:url]){
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     }
 }
 
-- (BOOL)isInstalled:(NSString *)bundleId {
-    NSBundle *container = [NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/MobileContainerManager.framework"];
-    if ([container load]) {
-        Class appContainer = NSClassFromString(@"MCMAppContainer");
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundeclared-selector"
-        id container = [appContainer performSelector:@selector(containerWithIdentifier:error:) withObject:bundleId withObject:nil];
-#pragma clang diagnostic pop
-        if (container) {
-            return YES;
-        } else {
-            return NO;
-        }
+// 判断是否安装APP
+-(BOOL)checkAPPIsExist:(NSString*)URLScheme{
+    NSURL* url;
+    if ([URLScheme containsString:@"://"]) {
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@",URLScheme]];
+    } else {
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://",URLScheme]];
     }
-    return NO;
+    if ([[UIApplication sharedApplication] canOpenURL:url]){
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 #if !TARGET_IPHONE_SIMULATOR
