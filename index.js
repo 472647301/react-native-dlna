@@ -62,3 +62,10 @@ export function onDlnaMediaInfo(callback) {
   );
   return EmitterMap["DlnaMediaInfo"];
 }
+
+export function getDLNAState() {
+  if (!RNDLNA.getDLNAState) {
+    return;
+  }
+  return RNDLNA.getDLNAState();
+}
