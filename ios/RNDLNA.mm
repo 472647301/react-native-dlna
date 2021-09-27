@@ -76,6 +76,17 @@ RCT_EXPORT_METHOD(stopDLNAService)
 #endif
 }
 
+RCT_EXPORT_METHOD(getDLNAState:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+#if !TARGET_IPHONE_SIMULATOR
+if (!upnp->IsRunning()) {
+    resolve(@"STOPPING");
+} else {
+    resolve(@"RUNNING");
+}
+#endif
+}
+
 RCT_EXPORT_METHOD(getAllApps:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
