@@ -31,6 +31,7 @@ import java.util.List;
 
 public class RNDLNAModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
+    private volatile ServerInstance.State mState;
 
     public RNDLNAModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -54,6 +55,11 @@ public class RNDLNAModule extends ReactContextBaseJavaModule {
     public void stopDLNAService() {
         Intent intent = new Intent(reactContext, DLNAService.class);
         reactContext.stopService(intent);
+    }
+
+    @ReactMethod
+    public void getDLNAState(Promise promise) {
+        promise.resolve(mState.toString());
     }
 
     @ReactMethod
@@ -82,6 +88,7 @@ public class RNDLNAModule extends ReactContextBaseJavaModule {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onServerStateChange(ServerStateEvent event) {
         ServerInstance.State state = event.getState();
+        mState = state;
         WritableMap params = Arguments.createMap();
         params.putString("state", state.toString());
         sendEvent("DlnaStateChange", params);
