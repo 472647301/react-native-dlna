@@ -69,3 +69,17 @@ export function getDLNAState() {
   }
   return RNDLNA.getDLNAState();
 }
+
+export const DLNAServiceState = {
+  IDLE: "IDLE",
+  STARTING: "STARTING",
+  RUNNING: "RUNNING",
+  STOPPING: "STOPPING",
+};
+
+export const DLNAMediaType = {
+  TYPE_UNKNOWN: "TYPE_UNKNOWN",
+  TYPE_VIDEO: "TYPE_VIDEO",
+  TYPE_AUDIO: "TYPE_AUDIO",
+  TYPE_IMAGE: "TYPE_IMAGE",
+};
