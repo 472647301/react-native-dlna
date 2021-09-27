@@ -42,3 +42,4 @@ export declare function getAllApps(params?: {
   [key: string]: string;
 }>;
 export declare function startApp(packageName: string): void;
+export declare function getDLNAState(): Promise<DLNAServiceState>;
