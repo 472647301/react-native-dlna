@@ -39,10 +39,12 @@ public enum ServerInstance {
     }
 
     public void start(ServerParams params) {
-        EventBus.getDefault().register(this);
-        ServerAsyncEvent event = new ServerAsyncEvent(ServerAsyncEvent.EVENT_START);
-        event.setParam(params);
-        EventBus.getDefault().post(event);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+            ServerAsyncEvent event = new ServerAsyncEvent(ServerAsyncEvent.EVENT_START);
+            event.setParam(params);
+            EventBus.getDefault().post(event);
+        }
     }
 
     public void stop() {
