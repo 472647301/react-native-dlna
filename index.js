@@ -30,7 +30,7 @@ export function stopDLNAService() {
 }
 
 export function getAllApps(config) {
-  RNDLNA.getAllApps(config);
+  return RNDLNA.getAllApps(config);
 }
 
 export function startApp(packageName) {
