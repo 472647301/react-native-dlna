@@ -3,7 +3,6 @@
 package com.plutinosoft;
 
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
@@ -14,6 +13,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.plutinosoft.event.NativeAsyncEvent;
@@ -27,7 +27,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.List;
+import java.util.HashMap;
 
 public class RNDLNAModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
@@ -63,18 +63,27 @@ public class RNDLNAModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getAllApps(Promise promise) {
+    public void getAllApps(final ReadableMap data, Promise promise) {
         WritableMap params = Arguments.createMap();
-        // 获取已经安装的所有应用, PackageInfo　系统类，包含应用信息
-        List<PackageInfo> packages = reactContext.getPackageManager().getInstalledPackages(0);
-        for (int i = 0; i < packages.size(); i++) {
-            PackageInfo packageInfo = packages.get(i);
-            if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) { //非系统应用
-                String appName = packageInfo.applicationInfo.loadLabel(reactContext.getPackageManager()).toString();
-                params.putString(packageInfo.packageName, appName);
+        HashMap<String, Object> map = data.toHashMap();
+        for(String key : map.keySet()){
+            if(!isAppInstalled(key)) {
+                params.putString(key, (String) map.get(key));
             }
         }
         promise.resolve(params);
+    }
+
+    private boolean isAppInstalled(String packagename)
+    {
+        PackageInfo packageInfo;
+        try {
+            packageInfo = reactContext.getPackageManager().getPackageInfo(packagename, 0);
+        }catch (PackageManager.NameNotFoundException e) {
+            packageInfo = null;
+            e.printStackTrace();
+        }
+        return packageInfo ==null;
     }
 
     @ReactMethod
